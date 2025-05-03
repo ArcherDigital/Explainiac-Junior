@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#ffd1dc"/>
+  <meta name="description" content="Big ideas explained in tiny words. Ask anything, get it explained like you're 5,12,as a story or as an analogy.">
+  <meta property="og:title" content="Explainiac Jr">
+  <meta property="og:description" content="Complex to kindergarden, big ideas explained in tiny words ✨">
+  <meta property="og:image" content="https://yourdomain.com/og-image.png">
+  <title>Explainiac Jr</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      background: linear-gradient(135deg, #d9ddff, #ffd1dc);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      text-align: center;
+      color: #5e4b8b;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 30px;
+      font-size: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      background: #f9f9f9;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
+      background-color: #7b5dcf;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #5e4b8b;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .chat-container {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+      margin-top: 10px;
+    }
+
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ccc;
+      background-color: #fff;
+    }
+
+    .response {
+      background: #fffdee;
+      border: 1px solid #e0d6f9;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(175,150,255,0.25);
+      flex: 1;
+      animation: fadeIn 0.5s ease-in;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid #ccc;
+      border-top-color: #7b5dcf;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Explainiac Jr</h1>
+    <p class="subtitle">Complex to kindergarden big ideas explained in tiny words ✨</p>
+
+    <label for="style">Choose a style:</label>
+    <select id="style">
+      <option value="age5">Age 5</option>
+      <option value="story">As a story</option>
+      <option value="analogy">With an analogy</option>
+    </select>
+
+    <label for="prompt">Your question:</label>
+    <textarea id="prompt" placeholder="Enter a complicated topic..."></textarea>
+
+    <div class="buttons">
+      <button id="surpriseBtn" onclick="surpriseMe()">🎲 Surprise Me</button>
+      <button id="explainBtn" onclick="sendPrompt()">✨ Explain it!</button>
+    </div>
+
+    <div id="spinner" class="spinner" style="display:none;"></div>
+    <button id="simplifyBtn" onclick="elaborateFurther()" style="display:none;">🔄 More Brain Power!</button>
+
+    <div class="chat-container">
+      <img id="avatar" class="avatar" src="https://api.dicebear.com/9.x/bottts/svg?seed=Liam" alt="AI Avatar">
+      <div id="result" class="response"></div>
+    </div>
+  </div>
+
+  <script>
+    let lastPrompt = '';
+    const samplePrompts = [
+      "How does gravity work?",
+      "Why is the sky blue?",
+      "What is blockchain?",
+      "How do airplanes fly?",
+      "What is electricity?"
+    ];
+
+    function surpriseMe() {
+      document.getElementById('prompt').value =
+        samplePrompts[Math.floor(Math.random() * samplePrompts.length)];
+    }
+
+    function typeText(element, text, delay = 25) {
+      element.innerHTML = '';
+      let i = 0;
+      const interval = setInterval(() => {
+        element.innerHTML += text.charAt(i);
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, delay);
+    }
+
+    async function sendPrompt() {
+      const prompt  = document.getElementById('prompt').value;
+      const style   = document.getElementById('style').value;
+      const btn     = document.getElementById('explainBtn');
+      const surprise= document.getElementById('surpriseBtn');
+      const simplify= document.getElementById('simplifyBtn');
+      const spinner = document.getElementById('spinner');
+      const avatar  = document.getElementById('avatar');
+      const out     = document.getElementById('result');
+
+      if (!prompt.trim()) {
+        alert("Please enter a question!");
+        return;
+      }
+
+      lastPrompt = prompt;
+      btn.disabled = surprise.disabled = true;
+      spinner.style.display = 'inline-block';
+      simplify.style.display = 'none';
+      out.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/explain', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({prompt, style})
+        });
+        const data = await res.json();
+        const text = data.response || 'Error: ' + (data.error || 'Unknown error');
+        out.innerHTML = '';
+        typeText(out, text);
+        simplify.style.display = 'block';
+      } catch (err) {
+        out.innerHTML = 'Error: ' + err.message;
+      } finally {
+        btn.disabled = surprise.disabled = false;
+        spinner.style.display = 'none';
+      }
+    }
+
+    function elaborateFurther() {
+      document.getElementById('prompt').value = lastPrompt + ' Please explain this with abit more detail and complexity .';
+      sendPrompt();
+    }
+  </script>
+
+</body>
+</html>
