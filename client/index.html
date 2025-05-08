@@ -55,18 +55,27 @@
 
     select, textarea {
       width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      border-radius: 12px;
-      border: 1px solid #ddd;
+      padding: 16px;
+      font-size: 1.1rem;
+      border-radius: 16px;
+      border: 2px solid #d0c4f7;
       margin-bottom: 20px;
-      background: #f9f9f9;
+      background: #fefefe;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      border-color: #7b5dcf;
+      box-shadow: 0 0 8px rgba(123, 93, 207, 0.3);
+      outline: none;
     }
 
     .buttons {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     button {
@@ -116,6 +125,9 @@
       animation: fadeIn 0.5s ease-in;
       max-height: 300px;
       overflow-y: auto;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
 
     @keyframes fadeIn {
@@ -159,11 +171,14 @@
     </select>
 
     <label for="prompt">Your question:</label>
-    <textarea id="prompt" placeholder="Enter a complicated topic..."></textarea>
+    <textarea id="prompt" placeholder="Ask me anything… like you're really curious!"></textarea>
 
     <div class="buttons">
       <button id="surpriseBtn" onclick="surpriseMe()">🎲 Surprise Me</button>
       <button id="explainBtn" onclick="sendPrompt()">✨ Explain it!</button>
+    </div>
+    <div class="buttons">
+      <button onclick="clearChat()" style="background:#ccc; color:#333;">🧹 Clear</button>
     </div>
 
     <div id="spinner" class="spinner" style="display:none;"></div>
@@ -184,6 +199,12 @@
       "How do airplanes fly?",
       "What is electricity?"
     ];
+
+    const promptBox = document.getElementById('prompt');
+    promptBox.addEventListener('input', () => {
+      promptBox.style.height = 'auto';
+      promptBox.style.height = promptBox.scrollHeight + 'px';
+    });
 
     function surpriseMe() {
       document.getElementById('prompt').value =
@@ -241,8 +262,15 @@
     }
 
     function elaborateFurther() {
-      document.getElementById('prompt').value = lastPrompt + ' Please explain this with abit more detail and complexity .';
+      const basePrompt = lastPrompt.replace(/Please explain this.*$/, '').trim();
+      document.getElementById('prompt').value = basePrompt + ' Please explain this with a bit more detail and complexity.';
       sendPrompt();
+    }
+
+    function clearChat() {
+      document.getElementById('prompt').value = '';
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('simplifyBtn').style.display = 'none';
     }
   </script>
 
